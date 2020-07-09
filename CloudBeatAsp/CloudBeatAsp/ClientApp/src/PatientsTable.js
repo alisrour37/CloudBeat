@@ -7,7 +7,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
+import { Typography } from '@material-ui/core';
+import patient from './patient.jpg';
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.common.black,
@@ -44,16 +45,25 @@ const useStyles = makeStyles({
     table: {
         minWidth: 700,
     },
+    image: {
+        backgroundImage: `url(${patient})`,
+        backgroundRepeat: "no-repeat",
+    height:'100vh',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    }
 });
 
 export default function PatientsTable() {
     const classes = useStyles();
 
     return (
-        <TableContainer component={Paper}>
+        <div className={classes.image}>
+        <Typography variant="h4" style={{color:'black',fontFamily:'Ubuntu', marginBottom:'20px'}}>Click on a row to check patient information</Typography>
+        <TableContainer component={Paper} style ={{width:'70%', marginLeft:'200px',marginTop:'50px'}}>
             <Table className={classes.table} aria-label="customized table">
                 <TableHead>
-                    <TableRow>
+                    <TableRow >
                         <StyledTableCell>Patient ID</StyledTableCell>
                         <StyledTableCell align="right">Name</StyledTableCell>
                         <StyledTableCell align="right">Date of Birth</StyledTableCell>
@@ -65,7 +75,7 @@ export default function PatientsTable() {
                 </TableHead>
                 <TableBody>
                     {rows.map((row) => (
-                        <StyledTableRow key={row.name}>
+                        <StyledTableRow key={row.name} onClick={()=>console.log('batataaa')}>
                             <StyledTableCell component="th" scope="row">
                                 {row.name}
                             </StyledTableCell>
@@ -80,5 +90,6 @@ export default function PatientsTable() {
                 </TableBody>
             </Table>
         </TableContainer>
+ </div>
     );
 }
