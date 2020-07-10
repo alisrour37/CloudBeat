@@ -20,7 +20,7 @@ namespace CloudBeatAsp.Controllers
         }
 
         [HttpGet]
-        [Route("Events/{patientId}")]
+        
         public IActionResult GetValues()
         {
                 var events = _context.Events.ToList();

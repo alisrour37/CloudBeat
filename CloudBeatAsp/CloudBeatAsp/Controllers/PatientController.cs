@@ -15,12 +15,12 @@ namespace CloudBeatAsp.Controllers
         private readonly DataContext _context;
         public PatientController(DataContext context)
         {
-                        _context = context;
+            _context = context;
         }
         [HttpGet]
-        [Route("Patients")]
+        
         public IActionResult GetPatient(){
-            var patients = _context.Patients.ToList();
+            var patients = _context.Patients.OrderBy(b=>b.StudyStartTime).OrderBy(b=>b.Name).ToList();
             return Ok(patients);
         }
 
