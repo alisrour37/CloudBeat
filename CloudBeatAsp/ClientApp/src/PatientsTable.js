@@ -11,7 +11,9 @@ import { Typography, Button} from '@material-ui/core';
 import patient from './patient.jpg';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
-import Model from './Model.png'
+import Model from './Model.png';
+import Highcharts from 'highcharts';
+import HighchartsReact from 'highcharts-react-official';
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -53,31 +55,80 @@ export default function PatientsTable() {
     const [patientId, setpatientId] = useState(false)
     const [view, setview] = useState(false)
     const [events, setEvents] = useState([])
-    
+    const [patientName,setPatientName] = useState()
+    const [minheartrate, setminheartrate] = useState([])
+    const [avgheartrate, setavgheartrate] = useState([])
+    const [maxheartrate, setmaxheartrate] = useState([])
     useEffect(() => {
-        axios.get("https://localhost:5001/api/event/"+patientId)
+       
+    axios.get("https://localhost:5001/api/patient")
     .then(res=>{
         
-        setEvents(res.data)
+        setPatients(res.data)
     });
+    
     }, [])
 
-
+    const options = {
+        chart: {
+          type: 'spline'
+        },
+        title: {
+          text: patientName
+        },
+        series: [
+            {
+                name:'Minimum Heart Rate',
+                data: minheartrate
+              }, 
+              {
+                name:'Average Heart Rate',
+                data: avgheartrate
+              },
+              {
+                name:'Maximum Heart Rate',
+                data: maxheartrate
+              }      ],
+              yAxis: {
+                
+                title: {
+                    text: 'Heart Rate (BPM)'
+                }
+            },
+      };
     const answers = () =>{
     return (
         <div style={{backgroundColor:'white', width:'80%'}}>
     <Typography >Question 1: I would use Database indexing which helps in searching much faster, but still has a downside which is the inclusion of new indices for elements that didn't exist previously in the database</Typography> 
-    <Typography >Question 2: I would go for Database indexing which helps in searching</Typography>
+    <Typography >Question 2: select p.Name, count(e.PatientId) as NumberofEvents
+    from Patients as p, Events as e
+    Where p.PatientId = e.PatientId
+    Group By p.Name,p.PatientId
+    Order By p.Name desc;</Typography>
     <Typography>Question 3: Software Architecture</Typography>
     <img src = {Model} ></img>
     </div>)  
 };
-   
+   const getevents = (id,name) =>{
+    setpatientId(!patientId)
+    setPatientName(name) 
+    axios.get("https://localhost:5001/api/event/"+id)
+    .then(res=>{
+        const minheart= []
+        const avgheart=[]
+        const maxheart=[]
+        res.data.map((event)=>{
+        minheart.push(event.heartRateMin);
+        avgheart.push(event.heartRateAvg);
+        maxheart.push(event.heartRateMax);
+        });
+        setminheartrate(minheart)
+        setavgheartrate(avgheart)
+        setmaxheartrate(maxheart)
 
-   const heartrategraph = () =>{
-       
-    
+    });
    }
+
    const viewanswers = () =>{
        setview(!view);
    }
@@ -101,7 +152,7 @@ export default function PatientsTable() {
                 </TableHead>
                 <TableBody>
                     {patients.map((patient) => (
-                        <StyledTableRow key={patient.patientId} onClick={()=>setpatientId(patient.patientId)}>
+                        <StyledTableRow key={patient.patientId} onClick={()=>getevents(patient.patientId,patient.name)}>
                             <StyledTableCell component="th" scope="row">
                                 {patient.patientId}
                             </StyledTableCell>
@@ -117,7 +168,10 @@ export default function PatientsTable() {
             </Table>
         </TableContainer>
         {patientId ? 
-        heartrategraph() : null
+            <div style={{width:'80%',marginTop:'30px', marginLeft:'200px'}}>
+        <HighchartsReact  options={options} highcharts={Highcharts}/> 
+        </div>
+        : null
         }
         <div style={{marginLeft:'200px', marginTop:'50px'}}>
         <Button   onClick={()=> viewanswers()} variant="contained">View Answers</Button>
