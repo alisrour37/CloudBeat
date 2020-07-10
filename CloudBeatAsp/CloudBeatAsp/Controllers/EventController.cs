@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace CloudBeatAsp.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class EventController : ControllerBase
     {
         private readonly DataContext _context;
@@ -19,11 +19,11 @@ namespace CloudBeatAsp.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         
-        public IActionResult GetValues()
+        public IActionResult GetValues(int id)
         {
-                var events = _context.Events.ToList();
+                var events = _context.Events.Where(x=>x.PatientId == id).ToList();
                 return Ok(events);
         }
     }

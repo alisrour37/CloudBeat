@@ -6,6 +6,12 @@ a {
 code {
   color: #E01A76;
 }
+html{
+  background-image: "./Model.png";
+}
+body{
+  background-image: "./Model.png";
+}
 
 .btn-primary {
   color: #fff;

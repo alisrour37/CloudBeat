@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CloudBeatAsp.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CloudBeatAsp.Controllers
 {
@@ -20,7 +21,7 @@ namespace CloudBeatAsp.Controllers
         [HttpGet]
         
         public IActionResult GetPatient(){
-            var patients = _context.Patients.OrderBy(b=>b.StudyStartTime).OrderBy(b=>b.Name).ToList();
+            var patients = _context.Patients.FromSqlRaw("select p.*, count(e.PatientId) as NumberofEvents from dbo.Patients as p left join dbo.Events as e on p.PatientId = e.PatientId  Group By p.DateOfBirth,p.DeviceSerialNumber,p.Name,p.PatientId,p.StudyEndTime,p.StudyStartTime Order By p.StudyStartTime, count(e.PatientId) desc;");
             return Ok(patients);
         }
 

@@ -16,6 +16,7 @@ namespace CloudBeatAsp.Models
         public DateTime StudyStartTime {get;set;}
         public DateTime StudyEndTime {get;set;}
         public string DeviceSerialNumber {get;set;}
+        public int NumberOfEvents {get;set;}
         
         public List<Event> Events {get;set;}
 

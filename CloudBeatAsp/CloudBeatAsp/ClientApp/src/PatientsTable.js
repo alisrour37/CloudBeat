@@ -7,10 +7,11 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Typography} from '@material-ui/core';
+import { Typography, Button} from '@material-ui/core';
 import patient from './patient.jpg';
 import {useState, useEffect} from 'react';
 import axios from 'axios';
+import Model from './Model.png'
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -39,32 +40,46 @@ const useStyles = makeStyles({
     },
     image: {
         backgroundImage: `url(${patient})`,
-        backgroundRepeat: "no-repeat",
-    height:'100vh',
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    }
+       
+        minHeight:'100%',
+        height:'100vh',
+        display:'block'
+     }
 });
 
 export default function PatientsTable() {
     const classes = useStyles();
     const [patients, setPatients] = useState([])
-    const [patientId, setpatientId] = useState(initialState)
-   useEffect(() => {
-    axios.get("https://localhost:5001/api/patient/")
+    const [patientId, setpatientId] = useState(false)
+    const [view, setview] = useState(false)
+    const [events, setEvents] = useState([])
+    
+    useEffect(() => {
+        axios.get("https://localhost:5001/api/event/"+patientId)
     .then(res=>{
-        setPatients(res.data)
+        
+        setEvents(res.data)
     });
+    }, [])
 
 
-   }, [])
+    const answers = () =>{
+    return (
+        <div style={{backgroundColor:'white', width:'80%'}}>
+    <Typography >Question 1: I would use Database indexing which helps in searching much faster, but still has a downside which is the inclusion of new indices for elements that didn't exist previously in the database</Typography> 
+    <Typography >Question 2: I would go for Database indexing which helps in searching</Typography>
+    <Typography>Question 3: Software Architecture</Typography>
+    <img src = {Model} ></img>
+    </div>)  
+};
+   
 
-   const getPatientInfo = () =>{
-    setpatientId()   
-    axios.get("https://localhost:5001/api/event/"+patientId)
-    .then(res=>{
-        setPatients(res.data)
-    });
+   const heartrategraph = () =>{
+       
+    
+   }
+   const viewanswers = () =>{
+       setview(!view);
    }
     return (
        
@@ -85,22 +100,29 @@ export default function PatientsTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row) => (
-                        <StyledTableRow key={row.name} onClick={()=>console.log('batataaa')}>
+                    {patients.map((patient) => (
+                        <StyledTableRow key={patient.patientId} onClick={()=>setpatientId(patient.patientId)}>
                             <StyledTableCell component="th" scope="row">
-                                {row.name}
+                                {patient.patientId}
                             </StyledTableCell>
-                            <StyledTableCell align="right">{row.calories}</StyledTableCell>
-                            <StyledTableCell align="right">{row.fat}</StyledTableCell>
-                            <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                            <StyledTableCell align="right">{row.protein}</StyledTableCell>
-                            <StyledTableCell align="right">{row.carbs}</StyledTableCell>
-                            <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.name}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.dateOfBirth}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.studyStartTime}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.studyEndTime}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.deviceSerialNumber}</StyledTableCell>
+                            <StyledTableCell align="right">{patient.numberOfEvents}</StyledTableCell>
                         </StyledTableRow>
                     ))}
                 </TableBody>
             </Table>
         </TableContainer>
+        {patientId ? 
+        heartrategraph() : null
+        }
+        <div style={{marginLeft:'200px', marginTop:'50px'}}>
+        <Button   onClick={()=> viewanswers()} variant="contained">View Answers</Button>
+        {view ? answers() : null}
+ </div>
  </div>
     );
 }
